@@ -1,4 +1,4 @@
-package org.hadifaraz;
+package org.hadifaraz.client;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -21,9 +21,15 @@ public class Client extends Panel implements Runnable {
         add("North", tf);
         add("Center", ta);
 
-        tf.addActionListener((ActionListener) e -> processMsg(e.getActionCommand()));
+        tf.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                processMsg(e.getActionCommand());
+            }
+        });
 
         try {
+            System.out.println("Connecting to server.");
             socket = new Socket(host, port);
 
             dis = new DataInputStream(socket.getInputStream());
@@ -31,30 +37,28 @@ public class Client extends Panel implements Runnable {
 
             new Thread(this).start();
 
-        } catch (IOException e) {
-            // TODO: Implement better error handling
-        }
+        } catch (IOException ignored) {}
     }
 
     public void processMsg(String msg) {
+        System.out.println("Got a message.");
         try {
+            System.out.println("Sending to server.");
             dos.writeUTF(msg);
 
             tf.setText("");
-        } catch (IOException e) {
-            // TODO: Implement error handling
-        }
+        } catch (IOException ignored) {}
     }
 
     public void run() {
         try {
             while (true) {
+                System.out.println("Waiting for message from server.");
                 String msg = dis.readUTF();
 
+                System.out.println("Printing message");
                 ta.append(String.format("%s%n", msg));
             }
-        } catch (IOException e) {
-            // TODO: Implement error handling or logging
-        }
+        } catch (IOException ignored) {}
     }
 }
