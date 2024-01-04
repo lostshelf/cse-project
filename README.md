@@ -2,16 +2,13 @@
 
 ## Images
 
-TBA
+## Usage
 
 ## Instructions
 
 ### JAR File
 
-TBA
-
 ### Compiling from source
 
 ## Resources used
 
-TBA
