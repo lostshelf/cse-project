@@ -9,7 +9,7 @@ import org.apache.commons.lang3.tuple.*;
 public class Server {
     int port;
     ServerSocket socket;
-    private Database db;
+    private final Database db;
     ArrayList<Triple<String, Socket, Pair<DataOutputStream, DataInputStream>>> connections;
 
     public Server(String dbUri, int port) throws IOException {
@@ -22,6 +22,7 @@ public class Server {
     }
 
     private void listen() {
+        //noinspection InfiniteLoopStatement
         while (true) {
             try {
 
@@ -33,8 +34,6 @@ public class Server {
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
 
-
-                System.out.println("Getting username from client.");
                 String userName = dis.readUTF();
                 System.out.printf("User %s has joined with address %s.%n", userName, socket.getInetAddress());
 
@@ -42,21 +41,34 @@ public class Server {
 
                 System.out.printf("Starting %s's server thread.%n", userName);
                 new ServerThread(userName, this, socket);
-            } catch (IOException ignored) {}
+
+                ArrayList<Pair<String, String>> msgs = db.getMsgs();
+
+                for (Pair msg : msgs) {
+                    dos.writeUTF(String.format("%s: %s%n", msg.getLeft(), msg.getRight()));
+                }
+
+            } catch (IOException e) {
+                Misc.promptErr(e);
+            }
         }
     }
 
     public void sendMsg(String userName, String msg) {
-
-        System.out.printf("%s says \"%s\".%n", userName, msg);
-
         try {
-            for (var connection : connections)
-                connection.getRight().getLeft().writeUTF(msg);
-        } catch (IOException ignored) {}
+            System.out.printf("%s says \"%s\".%n", userName, msg);
 
-        System.out.println("Adding message to database");
+            for (var connection : connections) {
+                System.out.printf("Sent message to %s.%n", connection.getLeft());
+                connection.getRight().getLeft().writeUTF(String.format("%s: %s", userName, msg));
+            }
+        } catch (IOException e) {
+            Misc.promptErr(e);
+        }
+
+
         db.addMsg(userName, msg);
+        System.out.println("Added message to database.");
     }
 
     public void removeConnection(String userName) {
