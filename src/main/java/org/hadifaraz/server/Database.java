@@ -13,6 +13,8 @@ public class Database {
             this.connection = DriverManager.getConnection(connection);
         } catch (SQLException e) {
             System.out.println("Invalid database connection url.");
+
+            Misc.promptErr(e);
         }
     }
 
@@ -47,25 +49,31 @@ public class Database {
             System.out.println("Unable to create database table.");
 
             System.out.println(e.getMessage());
+
+            Misc.promptErr(e);
         }
     }
 
     public void addMsg(String sender, String contents) {
         try {
-            execute(String.format("INSERT INTO messages (sender, contents) VALUES (%s, %s)", sender, contents));
+            execute(String.format("INSERT INTO messages (sender, content) VALUES (\"%s\", \"%s\")", sender, contents));
         } catch (Exception e) {
             System.out.println("Unable to upload message to database");
+
+            Misc.promptErr(e);
         }
     }
 
     public ArrayList<Pair<String, String>> getMsgs(int amount) {
         ArrayList<Pair<String, String>> msgs = new ArrayList<>();
 
-        try (ResultSet res = executeQuery(String.format("SELECT user_name, content FROM messages ORDER BY DESC time LIMIT %d", amount));) {
+        try (ResultSet res = executeQuery(String.format("SELECT sender, content FROM messages ORDER BY timedate DESC LIMIT %d", amount))) {
             while (res.next())
-                msgs.add(Pair.of(res.getString("user_name"), res.getString("content")));
+                msgs.add(Pair.of(res.getString("sender"), res.getString("content")));
         } catch (Exception e) {
             System.out.println("Unable to retrieve message.");
+
+            Misc.promptErr(e);
         }
 
         return msgs;
