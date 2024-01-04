@@ -1,4 +1,4 @@
-package org.hadifaraz;
+package org.hadifaraz.server;
 
 import java.util.*;
 import java.io.*;
@@ -24,31 +24,44 @@ public class Server {
     private void listen() {
         while (true) {
             try {
+
+                System.out.println("Waiting for connection...");
                 Socket socket = this.socket.accept();
+
+                System.out.println("Received connection.");
 
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
 
+
+                System.out.println("Getting username from client.");
                 String userName = dis.readUTF();
+                System.out.printf("User %s has joined with address %s.%n", userName, socket.getInetAddress());
 
                 connections.add(Triple.of(userName, socket, Pair.of(dos, dis)));
 
-            } catch (IOException e) {
-                continue;
-            }
+                System.out.printf("Starting %s's server thread.%n", userName);
+                new ServerThread(userName, this, socket);
+            } catch (IOException ignored) {}
         }
     }
 
-    public void sendMsg(String msg) {
+    public void sendMsg(String userName, String msg) {
+
+        System.out.printf("%s says \"%s\".%n", userName, msg);
+
         try {
             for (var connection : connections)
                 connection.getRight().getLeft().writeUTF(msg);
-        } catch (IOException e) {
-            // TODO: Implement better error handling
-        }
+        } catch (IOException ignored) {}
+
+        System.out.println("Adding message to database");
+        db.addMsg(userName, msg);
     }
 
     public void removeConnection(String userName) {
+
+        System.out.printf("Removing %s from the server.%n", userName);
 
         for (int i = 0; i < connections.size(); i++)
             if (connections.get(i).getLeft().equals(userName)) {
@@ -56,6 +69,5 @@ public class Server {
 
                 break;
             }
-
     }
 }

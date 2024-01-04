@@ -1,31 +1,29 @@
-package org.hadifaraz;
+package org.hadifaraz.server;
 
 import java.io.*;
 import java.net.*;
 
 public class ServerThread extends Thread {
     Server server;
-    Socket socket;
+    DataInputStream dis;
+    DataOutputStream dos;
     String userName;
+    Socket socket;
 
-    public ServerThread(String userName, Server server, Socket socket) {
+    public ServerThread(String userName, Server server, Socket socket) throws IOException {
         this.server = server;
         this.socket = socket;
+        this.dos = new DataOutputStream(socket.getOutputStream());
+        this.dis = new DataInputStream(socket.getInputStream());
         this.userName = userName;
-    }
-
-    public void start() {
-
     }
 
     public void run() {
         try {
-            DataInputStream dis = new DataInputStream(socket.getInputStream());
-
             while (true) {
                 String message = dis.readUTF();
 
-                server.sendMsg(message);
+                server.sendMsg(userName, message);
             }
         } catch (IOException e) {
             System.out.println("Do something");
