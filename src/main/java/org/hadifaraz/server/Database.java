@@ -1,6 +1,6 @@
 package org.hadifaraz.server;
 
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.*;
 
 import java.sql.*;
 import java.util.*;
