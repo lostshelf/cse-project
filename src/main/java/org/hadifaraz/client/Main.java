@@ -4,7 +4,6 @@ import java.awt.*;
 import javax.swing.*;
 
 public class Main {
-    private static String userName;
     public static void main(String[] args) {
         Client client = new Client("localhost", 60430);
 
