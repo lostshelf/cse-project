@@ -9,12 +9,10 @@ public class Main {
         Client client = new Client("localhost", 60430);
 
         JFrame gui = new JFrame();
+
         gui.setSize(1200, 600);
-
         gui.setLayout(new BorderLayout());
-
         gui.setVisible(true);
-
         gui.add("Center", client);
 
         client.setVisible(true);
