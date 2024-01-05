@@ -10,14 +10,17 @@ import java.net.*;
 import javax.swing.*;
 
 
-public class Client extends Panel implements Runnable {
-    private final TextField tf = new TextField();
-    private final TextArea ta = new TextArea();
+public class Client extends JComponent implements Runnable {
+    private final JTextField tf = new JTextField();
+    private final JTextArea ta = new JTextArea();
     private Socket socket;
     private DataOutputStream dos;
     private DataInputStream dis;
     public Client(String host, int port) {
         setLayout(new BorderLayout());
+
+        ta.setEditable(false);
+        ta.setText("Please enter your username.");
 
         add("South", tf);
         add("Center", ta);
