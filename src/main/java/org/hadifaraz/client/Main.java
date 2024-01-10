@@ -5,7 +5,11 @@ import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
-        Client client = new Client("localhost", 60430);
+        if (args.length < 2) {
+            System.out.println("Usage: Client <HOST> <PORT>");
+        }
+
+        Client client = new Client(args[0], Integer.parseInt(args[1]));
 
         JFrame gui = new JFrame();
 
