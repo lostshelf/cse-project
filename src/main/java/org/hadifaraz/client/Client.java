@@ -12,10 +12,10 @@ import javax.swing.*;
 
 public class Client extends JComponent implements Runnable {
     // Where user inputs their messages
-    private final JTextField tf = new JTextField();
+    private final JTextField input = new JTextField();
 
     // Where the Server's messages are displayed
-    private final JTextArea ta = new JTextArea();
+    private final JTextArea dislpay = new JTextArea();
 
     // Server connection information
     private Socket socket;
@@ -26,13 +26,13 @@ public class Client extends JComponent implements Runnable {
         // GUI Setup
         setLayout(new BorderLayout());
 
-        ta.setEditable(false);
-        ta.setText("Please enter your username.");
+        display.setEditable(false);
+        display.setText("Please enter your username.");
 
-        add("South", tf);
-        add("Center", ta);
+        add("South", input);
+        add("Center", display);
 
-        tf.addActionListener(e -> processMsg(e.getActionCommand()));
+        input.addActionListener(e -> processMsg(e.getActionCommand()));
 
         try {
             socket = new Socket(host, port);
@@ -57,7 +57,7 @@ public class Client extends JComponent implements Runnable {
             System.out.println("Sent to server.");
 
             // Set the input field back to being empty
-            tf.setText("");
+            input.setText("");
         } catch (IOException e) {
             Misc.promptErr(e);
         }
@@ -71,7 +71,7 @@ public class Client extends JComponent implements Runnable {
                 System.out.println("Received message from server.");
 
                 // Dislpay message on the screen
-                ta.append(String.format("%s%n", msg));
+                display.append(String.format("%s%n", msg));
                 System.out.println("Displaying message.");
             }
         } catch (IOException ignored) {}
