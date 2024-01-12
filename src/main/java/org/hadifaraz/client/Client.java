@@ -11,12 +11,19 @@ import javax.swing.*;
 
 
 public class Client extends JComponent implements Runnable {
+    // Where user inputs their messages
     private final JTextField tf = new JTextField();
+
+    // Where the Server's messages are displayed
     private final JTextArea ta = new JTextArea();
+
+    // Server connection information
     private Socket socket;
     private DataOutputStream dos;
     private DataInputStream dis;
+    
     public Client(String host, int port) {
+        // GUI Setup
         setLayout(new BorderLayout());
 
         ta.setEditable(false);
@@ -36,6 +43,7 @@ public class Client extends JComponent implements Runnable {
 
             System.out.println("Data streams created.");
 
+            // Multithreading so it can send and recieve messages at the same time
             new Thread(this).start();
             System.out.println("Thread started.");
         } catch (IOException ignored) {}
@@ -48,6 +56,7 @@ public class Client extends JComponent implements Runnable {
             dos.writeUTF(msg);
             System.out.println("Sent to server.");
 
+            // Set the input field back to being empty
             tf.setText("");
         } catch (IOException e) {
             Misc.promptErr(e);
@@ -56,10 +65,12 @@ public class Client extends JComponent implements Runnable {
 
     public void run() {
         try {
+            // Keep reading messages until the Client exits
             while (true) {
                 String msg = dis.readUTF();
                 System.out.println("Received message from server.");
 
+                // Dislpay message on the screen
                 ta.append(String.format("%s%n", msg));
                 System.out.println("Displaying message.");
             }
